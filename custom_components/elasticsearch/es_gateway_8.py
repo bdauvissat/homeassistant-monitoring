@@ -218,7 +218,10 @@ class Elasticsearch8Gateway(ElasticsearchGateway):
             options = {}
             if ignore:
                 options["ignore_status"] = ignore
-            response = await self.client.options(**options).indices.get_index_template(name=name)
+
+            response = await self.client.indices.get_index_template(name=name) ## need to see how to use client options here
+
+            ##response = await self.client.options(**options).indices.get_index_template(name=name)
 
         return self._convert_response(response)
 
