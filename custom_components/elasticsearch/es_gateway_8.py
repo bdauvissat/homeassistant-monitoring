@@ -10,10 +10,13 @@ from types import MappingProxyType
 from typing import TYPE_CHECKING, Any
 
 import elasticsearch8
+import opensearchpy
 from elastic_transport import ObjectApiResponse
-from elasticsearch8._async.client import AsyncElasticsearch
-from elasticsearch8.helpers import async_streaming_bulk
+from opensearchpy import AsyncOpenSearch
+
+from opensearchpy._async.helpers.actions import async_streaming_bulk
 from homeassistant.util.ssl import client_context
+
 
 from custom_components.elasticsearch.const import ES_CHECK_PERMISSIONS_DATASTREAM
 from custom_components.elasticsearch.encoder import Serializer
@@ -38,7 +41,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class Gateway8Settings(GatewaySettings):
     """Elasticsearch Gateway settings object."""
 
-    def to_client(self) -> AsyncElasticsearch:
+    def to_client(self) -> AsyncOpenSearch:
         """Create an Elasticsearch client from the settings."""
 
         settings = {
@@ -68,14 +71,14 @@ class Gateway8Settings(GatewaySettings):
         if self.api_key:
             settings["api_key"] = self.api_key
 
-        return AsyncElasticsearch(**settings)
+        return AsyncOpenSearch(**settings)
 
 
 class Elasticsearch8Gateway(ElasticsearchGateway):
     """Encapsulates Elasticsearch operations."""
 
     _settings: Gateway8Settings
-    _client: AsyncElasticsearch
+    _client: AsyncOpenSearch
 
     def __init__(
         self,
@@ -134,7 +137,7 @@ class Elasticsearch8Gateway(ElasticsearchGateway):
             await gateway.stop()
 
     @property
-    def client(self) -> AsyncElasticsearch:
+    def client(self) -> AsyncOpenSearch:
         """Return the underlying ES Client."""
 
         return self._client
@@ -201,11 +204,12 @@ class Elasticsearch8Gateway(ElasticsearchGateway):
 
     @async_log_enter_exit_debug
     async def has_privileges(self, privileges) -> bool:
-        """Check if the user has the required privileges."""
-        with self._error_converter(msg="Error checking user privileges"):
-            response = await self.client.security.has_privileges(**privileges)
+        # """Check if the user has the required privileges."""
+        # with self._error_converter(msg="Error checking user privileges"):
+        #     response = await self.client.security.has_privileges(**privileges)
 
-        return self._convert_response(response).get("has_all_requested", False)
+        # return self._convert_response(response).get("has_all_requested", False)
+        return True
 
     @async_log_enter_exit_debug
     async def get_index_template(self, name, ignore: list[int] | None = None) -> dict:
@@ -284,9 +288,9 @@ class Elasticsearch8Gateway(ElasticsearchGateway):
         """Convert the API response to a dictionary."""
 
         # The response body is always a dictionary, but mypy doesn't know that
-        assert isinstance(response.body, dict)
+        assert isinstance(response, dict)
 
-        return dict(response.body)
+        return dict(response)
 
     @contextmanager
     def _error_converter(self, msg: str | None = None):

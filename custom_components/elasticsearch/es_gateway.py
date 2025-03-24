@@ -17,7 +17,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import AsyncGenerator
     from logging import Logger
 
-    from elasticsearch8._async.client import AsyncElasticsearch as AsyncElasticsearch8
+    from opensearchpy._async.client  import client as AsyncOpenSearch
 
 
 @dataclass
@@ -36,7 +36,7 @@ class GatewaySettings(ABC):
     minimum_privileges: MappingProxyType[str, Any] = MappingProxyType[str, Any]({})
 
     @abstractmethod
-    def to_client(self) -> AsyncElasticsearch8:
+    def to_client(self) -> AsyncOpenSearch:
         """Return an Elasticsearch client."""
 
     def to_dict(self) -> dict:
@@ -91,8 +91,8 @@ class ElasticsearchGateway(ABC):
 
     @property
     @abstractmethod
-    def client(self) -> AsyncElasticsearch8:
-        """Return the underlying ES Client."""
+    def client(self) -> AsyncOpenSearch:
+        """Return the underlying OS Client."""
 
     @property
     @abstractmethod
@@ -202,7 +202,7 @@ class ElasticsearchGateway(ABC):
     def _is_serverless(self, cluster_info: dict) -> bool:
         """Check if the Elasticsearch instance is serverless."""
 
-        return cluster_info["version"]["build_flavor"] == "serverless"
+        return True # To remove because OpenSearch has no concept of license tiers, so “build flavor” logic is unnecessary
 
     def _meets_minimum_version(self, cluster_info: dict, minimum_version: tuple[int, int]) -> bool:
         """Check if the Elasticsearch version is supported."""

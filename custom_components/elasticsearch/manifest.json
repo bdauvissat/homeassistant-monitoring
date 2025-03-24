@@ -17,7 +17,8 @@
   ],
   "quality_scale": "platinum",
   "requirements": [
-    "elasticsearch8==8.14.0"
+    "elasticsearch8==8.14.0",
+    "opensearch-py==2.8.0"
   ],
   "version": "2.0.0"
 }
