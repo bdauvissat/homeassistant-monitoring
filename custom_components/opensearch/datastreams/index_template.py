@@ -1,4 +1,4 @@
-"""Defines the index template for Elasticsearch data streams."""
+"""Defines the index template for OpenSearch data streams."""
 
 from typing import Any
 

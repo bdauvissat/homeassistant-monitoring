@@ -1,4 +1,4 @@
-"""Publishes documents to Elasticsearch."""
+"""Publishes documents to OpenSearch."""
 
 from __future__ import annotations
 
@@ -32,36 +32,36 @@ from homeassistant.helpers import state as state_helper
 from homeassistant.util import dt as dt_util
 from homeassistant.util.logging import async_create_catching_coro
 
-from custom_components.elasticsearch import utils
-from custom_components.elasticsearch.const import (
+from custom_components.opensearch import utils
+from custom_components.opensearch.const import (
     CONF_TAGS,
     DATASTREAM_DATASET_PREFIX,
     DATASTREAM_NAMESPACE,
     DATASTREAM_TYPE,
     StateChangeType,
 )
-from custom_components.elasticsearch.encoder import convert_set_to_list
-from custom_components.elasticsearch.entity_details import (
+from custom_components.opensearch.encoder import convert_set_to_list
+from custom_components.opensearch.entity_details import (
     ExtendedEntityDetails,
 )
-from custom_components.elasticsearch.errors import (
+from custom_components.opensearch.errors import (
     AuthenticationRequired,
     ESIntegrationConnectionException,
 )
-from custom_components.elasticsearch.logger import LOGGER as BASE_LOGGER
-from custom_components.elasticsearch.logger import (
+from custom_components.opensearch.logger import LOGGER as BASE_LOGGER
+from custom_components.opensearch.logger import (
     async_log_enter_exit_debug,
     log_enter_exit_debug,
     log_enter_exit_info,
 )
-from custom_components.elasticsearch.loop import LoopHandler
-from custom_components.elasticsearch.system_info import SystemInfo, SystemInfoResult
+from custom_components.opensearch.loop import LoopHandler
+from custom_components.opensearch.system_info import SystemInfo, SystemInfoResult
 
 if TYPE_CHECKING:  # pragma: no cover
     from homeassistant.helpers.device_registry import DeviceEntry
     from homeassistant.helpers.entity_registry import RegistryEntry
 
-    from custom_components.elasticsearch.es_gateway import ElasticsearchGateway
+    from custom_components.opensearch.os_gateway import ElasticsearchGateway
 
 ALLOWED_ATTRIBUTE_KEY_TYPES = str
 ALLOWED_ATTRIBUTE_VALUE_TYPES = tuple | dict | set | list | int | float | bool | str | None
@@ -539,7 +539,7 @@ class Pipeline:
             return utils.prepare_dict(document)
 
         def _state_to_extended_details(self, state: State) -> dict:
-            """Gather entity details from the state object and return a mapped dictionary ready to be put in an elasticsearch document."""
+            """Gather entity details from the state object and return a mapped dictionary ready to be put in an opensearch document."""
 
             document = self._extended_entity_details.async_get(state.entity_id).to_dict()
 

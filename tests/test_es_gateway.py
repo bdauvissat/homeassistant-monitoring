@@ -11,9 +11,9 @@ import elasticsearch8
 import elasticsearch8.helpers
 import pytest
 from aiohttp import client_exceptions
-from custom_components.elasticsearch.const import ES_CHECK_PERMISSIONS_DATASTREAM
-from custom_components.elasticsearch.datastreams.index_template import index_template_definition
-from custom_components.elasticsearch.errors import (
+from custom_components.opensearch.const import ES_CHECK_PERMISSIONS_DATASTREAM
+from custom_components.opensearch.datastreams.index_template import index_template_definition
+from custom_components.opensearch.errors import (
     AuthenticationRequired,
     CannotConnect,
     InsufficientPrivileges,
@@ -21,10 +21,10 @@ from custom_components.elasticsearch.errors import (
     UnsupportedVersion,
     UntrustedCertificate,
 )
-from custom_components.elasticsearch.es_gateway import (
+from custom_components.opensearch.os_gateway import (
     ElasticsearchGateway,
 )
-from custom_components.elasticsearch.es_gateway_8 import Elasticsearch8Gateway, Gateway8Settings
+from custom_components.opensearch.os_gateway_2 import Elasticsearch8Gateway, Gateway8Settings
 from elastic_transport import ApiResponseMeta, BaseNode, ObjectApiResponse
 from elasticsearch8._async.client import AsyncElasticsearch
 
@@ -464,7 +464,7 @@ class Test_Public_Functions:
             )
 
         with patch(
-            "custom_components.elasticsearch.es_gateway_8.async_streaming_bulk"
+            "custom_components.opensearch.es_gateway_8.async_streaming_bulk"
         ) as mock_streaming_bulk:
             mock_streaming_bulk.side_effect = [yield_response()]
 
@@ -479,7 +479,7 @@ class Test_Public_Functions:
         """Test the bulk method."""
 
         with patch(
-            "custom_components.elasticsearch.es_gateway_8.async_streaming_bulk"
+            "custom_components.opensearch.es_gateway_8.async_streaming_bulk"
         ) as mock_streaming_bulk:
             await gateway_mock_stateful.bulk(actions=[])
 

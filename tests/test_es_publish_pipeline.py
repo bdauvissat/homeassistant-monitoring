@@ -4,10 +4,10 @@ from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from custom_components.elasticsearch import utils
-from custom_components.elasticsearch.errors import AuthenticationRequired, CannotConnect
-from custom_components.elasticsearch.es_gateway import ElasticsearchGateway
-from custom_components.elasticsearch.es_publish_pipeline import (
+from custom_components.opensearch import utils
+from custom_components.opensearch.errors import AuthenticationRequired, CannotConnect
+from custom_components.opensearch.os_gateway import ElasticsearchGateway
+from custom_components.opensearch.os_publish_pipeline import (
     EventQueue,
     Pipeline,
     PipelineSettings,
@@ -151,11 +151,11 @@ async def manager_fixture(
     """Return a Pipeline.Manager instance with mock components."""
     # patch the init methods for the listener, poller, formatter, and publisher to return mocks
     with (
-        patch("custom_components.elasticsearch.es_publish_pipeline.Pipeline.Listener") as listener,
-        patch("custom_components.elasticsearch.es_publish_pipeline.Pipeline.Poller") as poller,
-        patch("custom_components.elasticsearch.es_publish_pipeline.Pipeline.Filterer") as filterer,
-        patch("custom_components.elasticsearch.es_publish_pipeline.Pipeline.Formatter") as formatter,
-        patch("custom_components.elasticsearch.es_publish_pipeline.Pipeline.Publisher") as publisher,
+        patch("custom_components.opensearch.es_publish_pipeline.Pipeline.Listener") as listener,
+        patch("custom_components.opensearch.es_publish_pipeline.Pipeline.Poller") as poller,
+        patch("custom_components.opensearch.es_publish_pipeline.Pipeline.Filterer") as filterer,
+        patch("custom_components.opensearch.es_publish_pipeline.Pipeline.Formatter") as formatter,
+        patch("custom_components.opensearch.es_publish_pipeline.Pipeline.Publisher") as publisher,
     ):
         listener.return_value = mock_listener
         poller.return_value = mock_poller
@@ -630,7 +630,7 @@ class Test_Poller:
         async def test_async_init(self, poller: Pipeline.Poller, config_entry):
             """Test the async initialization of the Poller."""
             with (
-                patch("custom_components.elasticsearch.es_publish_pipeline.LoopHandler") as loop_handler,
+                patch("custom_components.opensearch.es_publish_pipeline.LoopHandler") as loop_handler,
             ):
                 # Ensure we don't start a coroutine that never finishes
                 loop_handler_instance = loop_handler.return_value
@@ -837,7 +837,7 @@ class Test_Publisher:
         assert publisher._format_datastream_name.cache_info().hits == 1
 
     async def test_add_action_and_meta_data(self, publisher, mock_document):
-        """Test converting document to an elasticsearch bulk action."""
+        """Test converting document to an opensearch bulk action."""
 
         async def yield_doc():
             yield mock_document

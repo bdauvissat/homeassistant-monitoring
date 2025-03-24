@@ -5,13 +5,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from unittest.mock import patch
 
-import custom_components.elasticsearch.const as compconst
+import custom_components.opensearch.const as compconst
 import homeassistant.const as haconst
 import pytest
-from custom_components.elasticsearch.config_flow import (
+from custom_components.opensearch.config_flow import (
     ElasticOptionsFlowHandler,
 )
-from custom_components.elasticsearch.errors import (
+from custom_components.opensearch.errors import (
     AuthenticationRequired,
     CannotConnect,
     InsufficientPrivileges,
@@ -30,7 +30,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from homeassistant.core import HomeAssistant
 
 
-base_path = "custom_components.elasticsearch"
+base_path = "custom_components.opensearch"
 config_flow_setup_entry = f"{base_path}.async_setup_entry"
 gateway_async_init = f"{base_path}.es_gateway_8.Elasticsearch8Gateway.async_init_then_stop"
 

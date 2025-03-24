@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
 import pytest
-from custom_components.elasticsearch.config_flow import ElasticFlowHandler
+from custom_components.opensearch.config_flow import ElasticFlowHandler
 from freezegun.api import FrozenDateTimeFactory
 from homeassistant.config_entries import ConfigEntryState
 from pytest_homeassistant_custom_component.common import (
@@ -19,7 +19,7 @@ from tests import const as testconst
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
-MODULE = "custom_components.elasticsearch"
+MODULE = "custom_components.opensearch"
 
 
 @pytest.fixture(autouse=True, name="freeze_time")

@@ -5,7 +5,7 @@ from unittest import mock
 from unittest.mock import AsyncMock, Mock
 
 import pytest
-from custom_components.elasticsearch.system_info import SystemInfo, SystemInfoResult
+from custom_components.opensearch.system_info import SystemInfo, SystemInfoResult
 from homeassistant.const import __version__ as current_version
 from homeassistant.core import HomeAssistant
 

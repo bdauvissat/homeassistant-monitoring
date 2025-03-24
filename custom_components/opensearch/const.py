@@ -4,8 +4,8 @@ from enum import Enum
 from types import MappingProxyType
 from typing import Any
 
-DOMAIN: str = "elasticsearch"
-ELASTIC_DOMAIN: str = "elasticsearch"
+DOMAIN: str = "opensearch"
+ELASTIC_DOMAIN: str = "opensearch"
 
 ELASTIC_MINIMUM_VERSION: tuple[int, int] = (2, 0)
 

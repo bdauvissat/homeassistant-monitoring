@@ -2,7 +2,7 @@
 
 from datetime import UTC, datetime
 
-from custom_components.elasticsearch.const import (
+from custom_components.opensearch.const import (
     CONF_CHANGE_DETECTION_TYPE,
     CONF_EXCLUDE_TARGETS,
     CONF_INCLUDE_TARGETS,

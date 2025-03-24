@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from custom_components.elasticsearch import const as compconst
+from custom_components.opensearch import const as compconst
 
 
 def skip_dict_values(d: dict, skip_values: list[Any]) -> dict:

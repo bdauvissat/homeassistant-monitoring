@@ -7,16 +7,16 @@ from unittest import mock
 from unittest.mock import AsyncMock
 
 import pytest
-from custom_components.elasticsearch import (
+from custom_components.opensearch import (
     async_migrate_entry,
     async_setup_entry,
     async_unload_entry,
     migrate_data_and_options_to_version,
 )
-from custom_components.elasticsearch.config_flow import ElasticFlowHandler
-from custom_components.elasticsearch.const import DOMAIN as ELASTIC_DOMAIN
-from custom_components.elasticsearch.errors import ESIntegrationException
-from custom_components.elasticsearch.es_integration import ElasticIntegration
+from custom_components.opensearch.config_flow import ElasticFlowHandler
+from custom_components.opensearch.const import DOMAIN as ELASTIC_DOMAIN
+from custom_components.opensearch.errors import ESIntegrationException
+from custom_components.opensearch.os_integration import ElasticIntegration
 from freezegun.api import FrozenDateTimeFactory
 from homeassistant.config_entries import ConfigEntryState, ConfigFlow
 from homeassistant.setup import async_setup_component
@@ -42,7 +42,7 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.loader import ComponentProtocol, Integration
 
-MODULE = "custom_components.elasticsearch"
+MODULE = "custom_components.opensearch"
 
 
 @pytest.fixture(name="mock_flow")

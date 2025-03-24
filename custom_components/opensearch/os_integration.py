@@ -1,4 +1,4 @@
-"""Support for sending event data to an Elasticsearch cluster."""
+"""Support for sending event data to an OpenSearch cluster."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from homeassistant.const import (
     CONF_VERIFY_SSL,
 )
 
-from custom_components.elasticsearch.const import (
+from custom_components.opensearch.const import (
     CONF_CHANGE_DETECTION_TYPE,
     CONF_DEBUG_ATTRIBUTE_FILTERING,
     CONF_EXCLUDE_TARGETS,
@@ -28,12 +28,12 @@ from custom_components.elasticsearch.const import (
     CONF_TARGETS_TO_INCLUDE,
     ES_CHECK_PERMISSIONS_DATASTREAM,
 )
-from custom_components.elasticsearch.errors import ESIntegrationException
-from custom_components.elasticsearch.es_datastream_manager import DatastreamManager
-from custom_components.elasticsearch.es_gateway_8 import Elasticsearch8Gateway, Gateway8Settings
-from custom_components.elasticsearch.es_publish_pipeline import Pipeline, PipelineSettings
-from custom_components.elasticsearch.logger import LOGGER as BASE_LOGGER
-from custom_components.elasticsearch.logger import async_log_enter_exit_debug, log_enter_exit_debug
+from custom_components.opensearch.errors import ESIntegrationException
+from custom_components.opensearch.os_datastream_manager import DatastreamManager
+from custom_components.opensearch.os_gateway_2 import OpenSearch2Gateway, Gateway2Settings
+from custom_components.opensearch.os_publish_pipeline import Pipeline, PipelineSettings
+from custom_components.opensearch.logger import LOGGER as BASE_LOGGER
+from custom_components.opensearch.logger import async_log_enter_exit_debug, log_enter_exit_debug
 
 if TYPE_CHECKING:  # pragma: no cover
     from logging import Logger
@@ -58,10 +58,10 @@ class ElasticIntegration:
         self._logger.info("Initializing integration components.")
 
         # Initialize our Elasticsearch Gateway
-        gateway_settings: Gateway8Settings = self.build_gateway_parameters(
+        gateway_settings: Gateway2Settings = self.build_gateway_parameters(
             config_entry=self._config_entry,
         )
-        self._gateway = Elasticsearch8Gateway(log=self._logger, gateway_settings=gateway_settings)
+        self._gateway = OpenSearch2Gateway(log=self._logger, gateway_settings=gateway_settings)
 
         # Initialize our publishing pipeline
         manager_parameters = self.build_pipeline_manager_parameters(
@@ -98,9 +98,9 @@ class ElasticIntegration:
         cls,
         config_entry: ConfigEntry,
         minimum_privileges: MappingProxyType[str, Any] = ES_CHECK_PERMISSIONS_DATASTREAM,
-    ) -> Gateway8Settings:
+    ) -> Gateway2Settings:
         """Build the parameters for the Elasticsearch gateway."""
-        return Gateway8Settings(
+        return Gateway2Settings(
             url=config_entry.data[CONF_URL],
             username=config_entry.data.get(CONF_USERNAME),
             password=config_entry.data.get(CONF_PASSWORD),

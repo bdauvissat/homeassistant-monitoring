@@ -1,7 +1,7 @@
 """Tests for the Elasticsearch integration diagnostics."""
 
 import pytest
-from custom_components.elasticsearch.diagnostics import async_get_config_entry_diagnostics
+from custom_components.opensearch.diagnostics import async_get_config_entry_diagnostics
 from homeassistant.const import (
     CONF_API_KEY,
     CONF_PASSWORD,
