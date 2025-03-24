@@ -1,6 +1,6 @@
 {
-  "domain": "elasticsearch",
-  "name": "Elasticsearch",
+  "domain": "opensearch",
+  "name": "OpenSearch",
   "after_dependencies": [
     "hassio"
   ],
