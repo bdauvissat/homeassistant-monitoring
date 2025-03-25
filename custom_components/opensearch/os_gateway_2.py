@@ -184,7 +184,7 @@ class OpenSearch2Gateway(OpenSearchGateway):
         """Check if the cluster has security enabled."""
 
         with self._error_converter(msg="Error checking whether platform is serverless"):
-            # Check if the cluster is serverless, security is always enabled in serverless
+            # TO DO: check how to make this compatible with openesarch security 
             info: dict = await self.info()
 
         if self._is_serverless(info):
