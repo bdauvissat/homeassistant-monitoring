@@ -29,7 +29,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import attr
 import pytest
 from aiohttp import ClientSession, TCPConnector
-from custom_components.opensearch.config_flow import ElasticFlowHandler
+from custom_components.opensearch.config_flow import OpenSearchFlowHandler
 from freezegun.api import FrozenDateTimeFactory
 
 # import custom_components.opensearch  # noqa: F401
@@ -168,7 +168,7 @@ async def data() -> dict:
 @pytest.fixture
 async def version() -> int:
     """Return a mock options dict."""
-    return ElasticFlowHandler.VERSION
+    return OpenSearchFlowHandler.VERSION
 
 
 @pytest.fixture

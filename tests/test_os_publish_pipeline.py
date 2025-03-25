@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from custom_components.opensearch import utils
 from custom_components.opensearch.errors import AuthenticationRequired, CannotConnect
-from custom_components.opensearch.os_gateway import ElasticsearchGateway
+from custom_components.opensearch.os_gateway import OpenSearchGateway
 from custom_components.opensearch.os_publish_pipeline import (
     EventQueue,
     Pipeline,

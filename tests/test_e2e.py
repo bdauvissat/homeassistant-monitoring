@@ -1,4 +1,4 @@
-"""Tests for the Elasticsearch integration initialization."""
+"""Tests for the OpenSearch integration initialization."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
 import pytest
-from custom_components.opensearch.config_flow import ElasticFlowHandler
+from custom_components.opensearch.config_flow import OpenSearchFlowHandler
 from freezegun.api import FrozenDateTimeFactory
 from homeassistant.config_entries import ConfigEntryState
 from pytest_homeassistant_custom_component.common import (
@@ -183,12 +183,12 @@ class Test_Normal_Configuration:
 
         assert await integration_setup() is False
 
-        assert config_entry.version == ElasticFlowHandler.VERSION
+        assert config_entry.version == OpenSearchFlowHandler.VERSION
 
         assert config_entry.state is ConfigEntryState.SETUP_ERROR
         assert (
             config_entry.reason
-            == "Error retrieving cluster info from Elasticsearch. Authentication error connecting to Elasticsearch (type=security_exception; reason=missing authentication credentials for REST request [/?pretty])"
+            == "Error retrieving cluster info from OpenSearch. Authentication error connecting to OpenSearch (type=security_exception; reason=missing authentication credentials for REST request [/?pretty])"
         )
 
     async def test_setup_authorization_failure(
@@ -200,7 +200,7 @@ class Test_Normal_Configuration:
 
         assert await integration_setup() is False
 
-        assert config_entry.version == ElasticFlowHandler.VERSION
+        assert config_entry.version == OpenSearchFlowHandler.VERSION
 
         assert config_entry.state is ConfigEntryState.SETUP_ERROR
         assert config_entry.reason == "could not authenticate"
@@ -208,18 +208,18 @@ class Test_Normal_Configuration:
     async def test_setup_fake_elasticsearch_error(
         self, hass: HomeAssistant, integration_setup, es_mock_builder, config_entry
     ):
-        """Test the scenario where we are not connecting to an authentic Elasticsearch endpoint."""
+        """Test the scenario where we are not connecting to an authentic OpenSearch endpoint."""
 
         es_mock_builder.as_fake_elasticsearch()
 
         assert await integration_setup() is False
 
-        assert config_entry.version == ElasticFlowHandler.VERSION
+        assert config_entry.version == OpenSearchFlowHandler.VERSION
 
         assert config_entry.state is ConfigEntryState.SETUP_RETRY
         assert (
             config_entry.reason
-            == "Error retrieving cluster info from Elasticsearch. Unsupported product error connecting to Elasticsearch"
+            == "Error retrieving cluster info from OpenSearch. Unsupported product error connecting to OpenSearch"
         )
 
     async def test_setup_server_error(
@@ -231,12 +231,12 @@ class Test_Normal_Configuration:
 
         assert await integration_setup() is False
 
-        assert config_entry.version == ElasticFlowHandler.VERSION
+        assert config_entry.version == OpenSearchFlowHandler.VERSION
 
         assert config_entry.state is ConfigEntryState.SETUP_RETRY
         assert (
             config_entry.reason
-            == "Error retrieving cluster info from Elasticsearch. Error in request to Elasticsearch: 500"
+            == "Error retrieving cluster info from OpenSearch. Error in request to OpenSearch: 500"
         )
 
     async def test_setup_server_timeout(
@@ -248,12 +248,12 @@ class Test_Normal_Configuration:
 
         assert await integration_setup() is False
 
-        assert config_entry.version == ElasticFlowHandler.VERSION
+        assert config_entry.version == OpenSearchFlowHandler.VERSION
 
         assert config_entry.state is ConfigEntryState.SETUP_RETRY
         assert (
             config_entry.reason
-            == "Error retrieving cluster info from Elasticsearch. Connection timeout connecting to Elasticsearch"
+            == "Error retrieving cluster info from OpenSearch. Connection timeout connecting to OpenSearch"
         )
 
     async def test_setup_tls_error(
@@ -265,27 +265,27 @@ class Test_Normal_Configuration:
 
         assert await integration_setup() is False
 
-        assert config_entry.version == ElasticFlowHandler.VERSION
+        assert config_entry.version == OpenSearchFlowHandler.VERSION
 
         assert config_entry.state is ConfigEntryState.SETUP_RETRY
         assert (
             config_entry.reason
-            == "Error retrieving cluster info from Elasticsearch. Could not complete TLS Handshake. Cannot connect to host mock_es_integration:9200 ssl:True [SSLCertVerificationError: ()]"
+            == "Error retrieving cluster info from OpenSearch. Could not complete TLS Handshake. Cannot connect to host mock_es_integration:9200 ssl:True [SSLCertVerificationError: ()]"
         )
 
     async def test_setup_unsupported_error(
         self, hass: HomeAssistant, integration_setup, es_mock_builder, config_entry
     ):
-        """Test the scenario where we connect and find an Elasticsearch node running an unsupported version."""
+        """Test the scenario where we connect and find an OpenSearch node running an unsupported version."""
 
         es_mock_builder.as_elasticsearch_8_0()
 
         assert await integration_setup() is False
 
-        assert config_entry.version == ElasticFlowHandler.VERSION
+        assert config_entry.version == OpenSearchFlowHandler.VERSION
 
         assert config_entry.state is ConfigEntryState.SETUP_RETRY
-        assert config_entry.reason == "Elasticsearch version is not supported. Minimum version: (8, 14)"
+        assert config_entry.reason == "OpenSearch version is not supported. Minimum version: (8, 14)"
 
 
 class Test_Publish_Disabled:
