@@ -1,15 +1,8 @@
-Here's a rewritten version of the README with OpenSearch as the focus:
-
----
-
 # OpenSearch Component for Home-Assistant
-![build](https://github.com/legrego/homeassistant-opensearch/actions/workflows/cron.yml/badge.svg)  
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
+
 =====
 
 Publish Home Assistant events to your [OpenSearch](https://opensearch.org) cluster!
-
-Documentation: [https://legrego.github.io/homeassistant-opensearch/](https://legrego.github.io/homeassistant-opensearch/)
 
 ## Table of Contents
 
