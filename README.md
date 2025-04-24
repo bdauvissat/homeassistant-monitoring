@@ -1,7 +1,5 @@
 # OpenSearch Component for Home-Assistant
 
-=====
-
 Publish Home Assistant events to your [OpenSearch](https://opensearch.org) cluster!
 
 ## Table of Contents
