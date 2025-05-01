@@ -6,8 +6,8 @@ Elasticsearch index templates for Home Assistant datastreams.
 
 from logging import Logger
 
-from custom_components.elasticsearch.datastreams.index_template import index_template_definition
-from custom_components.elasticsearch.es_gateway import ElasticsearchGateway
+from custom_components.opensearch.datastreams.index_template import index_template_definition
+from custom_components.opensearch.os_gateway import OpenSearchGateway
 
 from .const import (
     DATASTREAM_METRICS_INDEX_TEMPLATE_NAME,
@@ -23,14 +23,14 @@ class DatastreamManager:
 
     def __init__(
         self,
-        gateway: ElasticsearchGateway,
+        gateway: OpenSearchGateway,
         log: Logger = BASE_LOGGER,
     ) -> None:
         """Initialize index management."""
 
         self._logger = log
 
-        self._gateway: ElasticsearchGateway = gateway
+        self._gateway: OpenSearchGateway = gateway
 
     @async_log_enter_exit_debug
     async def async_init(self) -> None:

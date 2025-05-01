@@ -1,4 +1,4 @@
-"""Config flow for Elastic."""
+"""Config flow for OpenSearch."""
 
 from typing import Any
 
@@ -28,7 +28,7 @@ from homeassistant.helpers.selector import (
     TextSelectorType,
 )
 
-from custom_components.elasticsearch.const import (
+from custom_components.opensearch.const import (
     CONF_AUTHENTICATION_TYPE,
     CONF_CHANGE_DETECTION_TYPE,
     CONF_EXCLUDE_TARGETS,
@@ -43,14 +43,14 @@ from custom_components.elasticsearch.const import (
     ONE_MINUTE,
     StateChangeType,
 )
-from custom_components.elasticsearch.const import DOMAIN as ELASTIC_DOMAIN
-from custom_components.elasticsearch.errors import (
+from custom_components.opensearch.const import DOMAIN as ELASTIC_DOMAIN
+from custom_components.opensearch.errors import (
     AuthenticationRequired,
     CannotConnect,
     InsufficientPrivileges,
     UntrustedCertificate,
 )
-from custom_components.elasticsearch.es_gateway_8 import Elasticsearch8Gateway
+from custom_components.opensearch.os_gateway_2 import OpenSearch2Gateway
 
 from .logger import LOGGER as BASE_LOGGER
 from .logger import (
@@ -83,12 +83,12 @@ TRANSLATION_KEY_API_KEY = "api_key"
 TRANSLATION_KEY_BASIC_AUTH = "basic_auth"
 
 
-class ElasticFlowHandler(config_entries.ConfigFlow, domain=ELASTIC_DOMAIN):
-    """Handle an Elastic config flow."""
+class OpenSearchFlowHandler(config_entries.ConfigFlow, domain=ELASTIC_DOMAIN):
+    """Handle an OpenSearch config flow."""
 
     VERSION = 7
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_PUSH
-    GATEWAY = Elasticsearch8Gateway
+    GATEWAY = OpenSearch2Gateway
 
     def __init__(self) -> None:
         """Initialize the Elastic flow."""
@@ -101,7 +101,7 @@ class ElasticFlowHandler(config_entries.ConfigFlow, domain=ELASTIC_DOMAIN):
     ) -> ConfigFlowResult:  # noqa: ARG002
         """Handle a flow initialized by the user. This is the first step in the flow.
 
-        We will gather the url of the elasticsearch cluster and the desired authentication method.
+        We will gather the url of the opensearch cluster and the desired authentication method.
         """
 
         if errors is not None:
@@ -113,7 +113,7 @@ class ElasticFlowHandler(config_entries.ConfigFlow, domain=ELASTIC_DOMAIN):
             self._prospective_config.update(user_input)
 
             try:
-                await Elasticsearch8Gateway.async_init_then_stop(**prospective_settings)
+                await OpenSearch2Gateway.async_init_then_stop(**prospective_settings)
 
             except UntrustedCertificate:
                 return await self.async_step_certificate_issues()
@@ -150,7 +150,7 @@ class ElasticFlowHandler(config_entries.ConfigFlow, domain=ELASTIC_DOMAIN):
 
         if user_input is not None:
             try:
-                await Elasticsearch8Gateway.async_init_then_stop(
+                await OpenSearch2Gateway.async_init_then_stop(
                     url=self._prospective_config[CONF_URL],
                     verify_certs=user_input.get(CONF_VERIFY_SSL, True),
                     ca_certs=user_input.get(CONF_SSL_CA_PATH),
@@ -231,7 +231,7 @@ class ElasticFlowHandler(config_entries.ConfigFlow, domain=ELASTIC_DOMAIN):
 
         if user_input is not None:
             try:
-                await Elasticsearch8Gateway.async_init_then_stop(
+                await OpenSearch2Gateway.async_init_then_stop(
                     url=self._prospective_config[CONF_URL],
                     username=user_input.get(CONF_USERNAME),
                     password=user_input.get(CONF_PASSWORD),
@@ -280,7 +280,7 @@ class ElasticFlowHandler(config_entries.ConfigFlow, domain=ELASTIC_DOMAIN):
 
         if user_input is not None:
             try:
-                await Elasticsearch8Gateway.async_init_then_stop(
+                await OpenSearch2Gateway.async_init_then_stop(
                     url=self._prospective_config[CONF_URL],
                     api_key=user_input.get(CONF_API_KEY),
                     verify_certs=self._prospective_config.get(CONF_VERIFY_SSL, True),

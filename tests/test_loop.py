@@ -5,8 +5,8 @@ import time
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from custom_components.elasticsearch.logger import LOGGER as BASE_LOGGER
-from custom_components.elasticsearch.loop import LoopHandler
+from custom_components.opensearch.logger import LOGGER as BASE_LOGGER
+from custom_components.opensearch.loop import LoopHandler
 
 
 class Test_Initialization:

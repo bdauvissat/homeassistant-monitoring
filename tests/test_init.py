@@ -7,16 +7,16 @@ from unittest import mock
 from unittest.mock import AsyncMock
 
 import pytest
-from custom_components.elasticsearch import (
+from custom_components.opensearch import (
     async_migrate_entry,
     async_setup_entry,
     async_unload_entry,
     migrate_data_and_options_to_version,
 )
-from custom_components.elasticsearch.config_flow import ElasticFlowHandler
-from custom_components.elasticsearch.const import DOMAIN as ELASTIC_DOMAIN
-from custom_components.elasticsearch.errors import ESIntegrationException
-from custom_components.elasticsearch.es_integration import ElasticIntegration
+from custom_components.opensearch.config_flow import OpenSearchFlowHandler
+from custom_components.opensearch.const import DOMAIN as ELASTIC_DOMAIN
+from custom_components.opensearch.errors import ESIntegrationException
+from custom_components.opensearch.os_integration import ElasticIntegration
 from freezegun.api import FrozenDateTimeFactory
 from homeassistant.config_entries import ConfigEntryState, ConfigFlow
 from homeassistant.setup import async_setup_component
@@ -42,7 +42,7 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.loader import ComponentProtocol, Integration
 
-MODULE = "custom_components.elasticsearch"
+MODULE = "custom_components.opensearch"
 
 
 @pytest.fixture(name="mock_flow")
@@ -734,7 +734,7 @@ class Test_Public_Methods:
 
         assert config_entry.state is ConfigEntryState.NOT_LOADED
 
-        assert config_entry.version == ElasticFlowHandler.VERSION
+        assert config_entry.version == OpenSearchFlowHandler.VERSION
 
         # Mock migrate_data_and_options_to_version and make sure it wasn't called during setup
         with mock.patch(
@@ -747,7 +747,7 @@ class Test_Public_Methods:
 
             assert config_entry.state is ConfigEntryState.LOADED
 
-            assert config_entry.version == ElasticFlowHandler.VERSION
+            assert config_entry.version == OpenSearchFlowHandler.VERSION
 
     async def test_async_migrate_entry_failure(
         self,
@@ -809,13 +809,13 @@ class Test_Public_Methods:
 
         assert config_entry.state is ConfigEntryState.NOT_LOADED
 
-        config_entry.version = ElasticFlowHandler.VERSION - 1
+        config_entry.version = OpenSearchFlowHandler.VERSION - 1
 
         # Mock migrate_data_and_options_to_version and make sure it wasn't called during setup
         with (
             mock.patch(
                 f"{MODULE}.migrate_data_and_options_to_version",
-                return_value=(config_entry.data, config_entry.options, ElasticFlowHandler.VERSION),
+                return_value=(config_entry.data, config_entry.options, OpenSearchFlowHandler.VERSION),
             ) as mock_migrate_config,
             mock.patch.object(
                 hass.config_entries,
@@ -833,7 +833,7 @@ class Test_Public_Methods:
 
             assert updated_config_entry.state is ConfigEntryState.LOADED
 
-            assert updated_config_entry.version == ElasticFlowHandler.VERSION
+            assert updated_config_entry.version == OpenSearchFlowHandler.VERSION
 
 
 class Test_Private_Methods:

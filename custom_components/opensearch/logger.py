@@ -4,11 +4,11 @@ import logging
 from collections.abc import Callable, Coroutine
 from typing import Any
 
-LOGGER = logging.getLogger("custom_components.elasticsearch")
-es_library_logger = logging.getLogger("elasticsearch")
-es_library_logger.name = "custom_components.elasticsearch.library"
+LOGGER = logging.getLogger("custom_components.opensearch")
+es_library_logger = logging.getLogger("opensearch")
+es_library_logger.name = "custom_components.opensearch.library"
 es_transport_logger = logging.getLogger("elastic_transport")
-es_transport_logger.name = "custom_components.elasticsearch.transport"
+es_transport_logger.name = "custom_components.opensearch.transport"
 
 # if the logger is already set up, don't change the level
 if LOGGER.level == logging.NOTSET:
@@ -27,7 +27,7 @@ def have_child(name: str) -> logging.Logger:
     # Sanitize the param name only allowing lowercase a-z and 0-9 and replace spaces with underscores
     sanitized_name = "".join([c if c.isalnum() else "" for c in name.replace(" ", "_").lower()])
 
-    parent = logging.getLogger("custom_components.elasticsearch")
+    parent = logging.getLogger("custom_components.opensearch")
     new_logger = parent.getChild(f"{sanitized_name}")
     new_logger.name = f"{parent.name}-{sanitized_name}"
 

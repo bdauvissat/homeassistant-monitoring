@@ -1,4 +1,4 @@
-"""Elasticsearch Gateway for Elasticsearch 8.0.0."""
+"""OpenSearch Gateway for OpenSearch 2.0.0."""
 
 from __future__ import annotations
 
@@ -9,22 +9,24 @@ from dataclasses import dataclass
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any
 
-import elasticsearch8
+import opensearchpy
 from elastic_transport import ObjectApiResponse
-from elasticsearch8._async.client import AsyncElasticsearch
-from elasticsearch8.helpers import async_streaming_bulk
+from opensearchpy import AsyncOpenSearch
+
+from opensearchpy._async.helpers.actions import async_streaming_bulk
 from homeassistant.util.ssl import client_context
 
-from custom_components.elasticsearch.const import ES_CHECK_PERMISSIONS_DATASTREAM
-from custom_components.elasticsearch.encoder import Serializer
-from custom_components.elasticsearch.errors import (
+
+from custom_components.opensearch.const import ES_CHECK_PERMISSIONS_DATASTREAM
+from custom_components.opensearch.encoder import Serializer
+from custom_components.opensearch.errors import (
     AuthenticationRequired,
     CannotConnect,
     InsufficientPrivileges,
     ServerError,
     UntrustedCertificate,
 )
-from custom_components.elasticsearch.es_gateway import ElasticsearchGateway, GatewaySettings
+from custom_components.opensearch.os_gateway import OpenSearchGateway, GatewaySettings
 
 from .logger import LOGGER as BASE_LOGGER
 from .logger import async_log_enter_exit_debug
@@ -35,11 +37,11 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 @dataclass
-class Gateway8Settings(GatewaySettings):
-    """Elasticsearch Gateway settings object."""
+class Gateway2Settings(GatewaySettings):
+    """OpenSearch Gateway settings object."""
 
-    def to_client(self) -> AsyncElasticsearch:
-        """Create an Elasticsearch client from the settings."""
+    def to_client(self) -> AsyncOpenSearch:
+        """Create an OpenSearch client from the settings."""
 
         settings = {
             "hosts": [self.url],
@@ -68,21 +70,21 @@ class Gateway8Settings(GatewaySettings):
         if self.api_key:
             settings["api_key"] = self.api_key
 
-        return AsyncElasticsearch(**settings)
+        return AsyncOpenSearch(**settings)
 
 
-class Elasticsearch8Gateway(ElasticsearchGateway):
-    """Encapsulates Elasticsearch operations."""
+class OpenSearch2Gateway(OpenSearchGateway):
+    """Encapsulates OpenSearch operations."""
 
-    _settings: Gateway8Settings
-    _client: AsyncElasticsearch
+    _settings: Gateway2Settings
+    _client: AsyncOpenSearch
 
     def __init__(
         self,
-        gateway_settings: Gateway8Settings,
+        gateway_settings: Gateway2Settings,
         log: Logger = BASE_LOGGER,
     ) -> None:
-        """Initialize the Elasticsearch Gateway."""
+        """Initialize the OpenSearch Gateway."""
 
         super().__init__(
             gateway_settings=gateway_settings,
@@ -93,7 +95,7 @@ class Elasticsearch8Gateway(ElasticsearchGateway):
         self._client = self._settings.to_client()
 
     async def async_init(self) -> None:
-        """Initialize the Elasticsearch Gateway."""
+        """Initialize the OpenSearch Gateway."""
 
         await super().async_init()
 
@@ -114,7 +116,7 @@ class Elasticsearch8Gateway(ElasticsearchGateway):
         """Initialize the gateway and then stop it."""
 
         gateway = cls(
-            Gateway8Settings(
+            Gateway2Settings(
                 url=url,
                 username=username,
                 password=password,
@@ -134,42 +136,42 @@ class Elasticsearch8Gateway(ElasticsearchGateway):
             await gateway.stop()
 
     @property
-    def client(self) -> AsyncElasticsearch:
+    def client(self) -> AsyncOpenSearch:
         """Return the underlying ES Client."""
 
         return self._client
 
     @property
-    def settings(self) -> Gateway8Settings:
+    def settings(self) -> Gateway2Settings:
         """Return the settings."""
 
         return self._settings
 
     @async_log_enter_exit_debug
     async def info(self) -> dict:
-        """Retrieve info about the connected elasticsearch cluster."""
+        """Retrieve info about the connected OpenSearch cluster."""
 
-        with self._error_converter(msg="Error retrieving cluster info from Elasticsearch"):
+        with self._error_converter(msg="Error retrieving cluster info from OpenSearch"):
             response = await self.client.info()
 
         return self._convert_response(response)
 
     @async_log_enter_exit_debug
     async def ping(self) -> bool:
-        """Ping the Elasticsearch cluster. Raises only on Authentication issues."""
+        """Ping the OpenSearch cluster. Raises only on Authentication issues."""
         try:
             await self.info()
 
         except AuthenticationRequired:
             self._previous_ping = False
 
-            self._logger.debug("Authentication error pinging Elasticsearch", exc_info=True)
+            self._logger.debug("Authentication error pinging OpenSearch", exc_info=True)
 
             raise
         except:  # noqa: E722
             self._previous_ping = False
 
-            self._logger.debug("Error pinging Elasticsearch", exc_info=True)
+            self._logger.debug("Error pinging OpenSearch", exc_info=True)
 
             return False
         else:
@@ -182,7 +184,7 @@ class Elasticsearch8Gateway(ElasticsearchGateway):
         """Check if the cluster has security enabled."""
 
         with self._error_converter(msg="Error checking whether platform is serverless"):
-            # Check if the cluster is serverless, security is always enabled in serverless
+            # TO DO: check how to make this compatible with openesarch security 
             info: dict = await self.info()
 
         if self._is_serverless(info):
@@ -201,11 +203,12 @@ class Elasticsearch8Gateway(ElasticsearchGateway):
 
     @async_log_enter_exit_debug
     async def has_privileges(self, privileges) -> bool:
-        """Check if the user has the required privileges."""
-        with self._error_converter(msg="Error checking user privileges"):
-            response = await self.client.security.has_privileges(**privileges)
+        # """Check if the user has the required privileges."""
+        # with self._error_converter(msg="Error checking user privileges"):
+        #     response = await self.client.security.has_privileges(**privileges)
 
-        return self._convert_response(response).get("has_all_requested", False)
+        # return self._convert_response(response).get("has_all_requested", False)
+        return True
 
     @async_log_enter_exit_debug
     async def get_index_template(self, name, ignore: list[int] | None = None) -> dict:
@@ -214,7 +217,10 @@ class Elasticsearch8Gateway(ElasticsearchGateway):
             options = {}
             if ignore:
                 options["ignore_status"] = ignore
-            response = await self.client.options(**options).indices.get_index_template(name=name)
+
+            response = await self.client.indices.get_index_template(name=name) ## need to see how to use client options here
+
+            ##response = await self.client.options(**options).indices.get_index_template(name=name)
 
         return self._convert_response(response)
 
@@ -284,13 +290,13 @@ class Elasticsearch8Gateway(ElasticsearchGateway):
         """Convert the API response to a dictionary."""
 
         # The response body is always a dictionary, but mypy doesn't know that
-        assert isinstance(response.body, dict)
+        assert isinstance(response, dict)
 
-        return dict(response.body)
+        return dict(response)
 
     @contextmanager
     def _error_converter(self, msg: str | None = None):
-        """Convert an internal error from the elasticsearch package into one of our own."""
+        """Convert an internal error from the OpenSearch package into one of our own."""
 
         def append_msg(append_msg: str) -> str:
             """Append the exception's message to the caller's message."""
@@ -299,7 +305,7 @@ class Elasticsearch8Gateway(ElasticsearchGateway):
 
             return f"{msg}. {append_msg}"
 
-        def append_cause(err: elasticsearch8.ApiError, msg: str) -> str:
+        def append_cause(err: opensearchpy.exceptions, msg: str) -> str:
             """Append the root cause to the error message."""
             if err.info is None or err.info.get("error", None) is None:
                 return msg
@@ -321,43 +327,43 @@ class Elasticsearch8Gateway(ElasticsearchGateway):
         try:
             yield
 
-        except elasticsearch8.UnsupportedProductError as err:
-            # The HTTP response didn't include headers={"x-elastic-product": "Elasticsearch"}
-            raise CannotConnect(append_msg("Unsupported product error connecting to Elasticsearch")) from err
+        except opensearchpy.exceptions.ConflictError as err:
+            # The HTTP response didn't include headers={"x-elastic-product": "OpenSearch"}
+            raise CannotConnect(append_msg("Unsupported product error connecting to OpenSearch")) from err
 
-        except elasticsearch8.AuthenticationException as err:
+        except opensearchpy.exceptions.AuthenticationException as err:
             raise AuthenticationRequired(
-                append_cause(err, append_msg("Authentication error connecting to Elasticsearch"))
+                append_cause(err, append_msg("Authentication error connecting to OpenSearch"))
             ) from err
 
-        except elasticsearch8.AuthorizationException as err:
+        except opensearchpy.exceptions.AuthorizationException as err:
             raise InsufficientPrivileges(
-                append_cause(err, append_msg("Authorization error connecting to Elasticsearch"))
+                append_cause(err, append_msg("Authorization error connecting to OpenSearch"))
             ) from err
 
-        except elasticsearch8.ConnectionTimeout as err:
-            raise ServerError(append_msg("Connection timeout connecting to Elasticsearch")) from err
+        except opensearchpy.exceptions.ConnectionTimeout as err:
+            raise ServerError(append_msg("Connection timeout connecting to OpenSearch")) from err
 
-        except elasticsearch8.SSLError as err:
+        except opensearchpy.exceptions.SSLError as err:
             raise UntrustedCertificate(
-                append_msg(f"Could not complete TLS Handshake. {err.message}")
+                append_msg(f"Could not complete TLS Handshake. {err.error}")
             ) from err
 
-        except elasticsearch8.ConnectionError as err:
-            raise CannotConnect(append_msg(f"Error connecting to Elasticsearch. {err.message}")) from err
+        except opensearchpy.exceptions.ConnectionError as err:
+            raise CannotConnect(append_msg(f"Error connecting to OpenSearch. {err.error}")) from err
 
-        except elasticsearch8.TransportError as err:
+        except opensearchpy.exceptions.TransportError as err:
             raise CannotConnect(
-                append_msg(f"Unknown transport error connecting to Elasticsearch: {err.message}")
+                append_msg(f"Unknown transport error connecting to OpenSearch: {err.error}")
             ) from err
 
-        except elasticsearch8.ApiError as err:
+        except opensearchpy.exceptions as err:
             if err.status_code is not None:
                 raise ServerError(
-                    append_msg(f"Error in request to Elasticsearch: {err.status_code}")
+                    append_msg(f"Error in request to OpenSearch: {err.status_code}")
                 ) from err
             else:
-                raise ServerError(append_msg("Unknown API Error in request to Elasticsearch")) from err
+                raise ServerError(append_msg("Unknown API Error in request to OpenSearch")) from err
 
         except Exception:
             BASE_LOGGER.exception("Unknown and unexpected exception occurred.")

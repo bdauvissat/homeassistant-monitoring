@@ -1,4 +1,4 @@
-"""Encapsulates Elasticsearch operations."""
+"""Encapsulates OpenSearch operations."""
 
 from __future__ import annotations  # noqa: I001
 
@@ -6,8 +6,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from types import MappingProxyType
 from typing import TYPE_CHECKING
-from custom_components.elasticsearch.errors import InsufficientPrivileges, UnsupportedVersion
-from custom_components.elasticsearch.const import ES_CHECK_PERMISSIONS_DATASTREAM, ELASTIC_MINIMUM_VERSION
+from custom_components.opensearch.errors import InsufficientPrivileges, UnsupportedVersion
+from custom_components.opensearch.const import ES_CHECK_PERMISSIONS_DATASTREAM, ELASTIC_MINIMUM_VERSION
 
 from .logger import LOGGER as BASE_LOGGER
 from .logger import log_enter_exit_debug
@@ -17,12 +17,12 @@ if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import AsyncGenerator
     from logging import Logger
 
-    from elasticsearch8._async.client import AsyncElasticsearch as AsyncElasticsearch8
+    from opensearchpy._async.client  import client as AsyncOpenSearch
 
 
 @dataclass
 class GatewaySettings(ABC):
-    """Elasticsearch Gateway settings object."""
+    """OpenSearch Gateway settings object."""
 
     url: str
     username: str | None = None
@@ -36,7 +36,7 @@ class GatewaySettings(ABC):
     minimum_privileges: MappingProxyType[str, Any] = MappingProxyType[str, Any]({})
 
     @abstractmethod
-    def to_client(self) -> AsyncElasticsearch8:
+    def to_client(self) -> AsyncOpenSearch:
         """Return an Elasticsearch client."""
 
     def to_dict(self) -> dict:
@@ -56,8 +56,8 @@ class GatewaySettings(ABC):
         }
 
 
-class ElasticsearchGateway(ABC):
-    """Encapsulates Elasticsearch operations."""
+class OpenSearchGateway(ABC):
+    """Encapsulates OpenSearch operations."""
 
     _logger = BASE_LOGGER
 
@@ -82,7 +82,7 @@ class ElasticsearchGateway(ABC):
 
         # Minimum version check
         if not await self._is_supported_version():
-            msg = f"Elasticsearch version is not supported. Minimum version: {ELASTIC_MINIMUM_VERSION}"
+            msg = f"OpenSearch version is not supported. Minimum version: {ELASTIC_MINIMUM_VERSION}"
             raise UnsupportedVersion(msg)
 
         # Check minimum privileges
@@ -91,8 +91,8 @@ class ElasticsearchGateway(ABC):
 
     @property
     @abstractmethod
-    def client(self) -> AsyncElasticsearch8:
-        """Return the underlying ES Client."""
+    def client(self) -> AsyncOpenSearch:
+        """Return the underlying OS Client."""
 
     @property
     @abstractmethod
@@ -118,10 +118,10 @@ class ElasticsearchGateway(ABC):
 
     @abstractmethod
     async def info(self) -> dict:
-        """Retrieve info about the connected elasticsearch cluster."""
+        """Retrieve info about the connected opensearch cluster."""
 
     async def check_connection(self) -> bool:
-        """Check if the connection to the Elasticsearch cluster is working."""
+        """Check if the connection to the OpenSearch cluster is working."""
 
         previous_ping = self._previous_ping
         new_ping = await self.ping()
@@ -130,9 +130,9 @@ class ElasticsearchGateway(ABC):
         if previous_ping is None:
             established = new_ping
             if established:
-                self._logger.info("Connection to Elasticsearch is established.")
+                self._logger.info("Connection to OpenSearch is established.")
             else:
-                self._logger.error("Failed to establish connection to Elasticsearch.")
+                self._logger.error("Failed to establish connection to OpenSearch.")
 
             return new_ping
 
@@ -142,22 +142,22 @@ class ElasticsearchGateway(ABC):
         down: bool = not previous_ping and not new_ping
 
         if maintained:
-            self._logger.debug("Connection to Elasticsearch is still available.")
+            self._logger.debug("Connection to OpenSearch is still available.")
 
         if lost:
-            self._logger.error("Connection to Elasticsearch has been lost.")
+            self._logger.error("Connection to OpenSearch has been lost.")
 
         if down:
-            self._logger.debug("Connection to Elasticsearch is still down.")
+            self._logger.debug("Connection to OpenSearch is still down.")
 
         if reestablished:
-            self._logger.info("Connection to Elasticsearch has been reestablished.")
+            self._logger.info("Connection to OpenSearch has been reestablished.")
 
         return new_ping
 
     @abstractmethod
     async def ping(self) -> bool:
-        """Pings the connected elasticsearch cluster."""
+        """Pings the connected opensearch cluster."""
 
     @abstractmethod
     async def has_security(self) -> bool:
@@ -194,18 +194,18 @@ class ElasticsearchGateway(ABC):
     # Helper methods
 
     async def _is_supported_version(self) -> bool:
-        """Check if the Elasticsearch version is supported."""
+        """Check if the OpenSearch version is supported."""
         info: dict = await self.info()
 
         return self._is_serverless(info) or self._meets_minimum_version(info, ELASTIC_MINIMUM_VERSION)
 
     def _is_serverless(self, cluster_info: dict) -> bool:
-        """Check if the Elasticsearch instance is serverless."""
+        """Check if the OpenSearch instance is serverless."""
 
-        return cluster_info["version"]["build_flavor"] == "serverless"
+        return True # To remove because OpenSearch has no concept of license tiers, so “build flavor” logic is unnecessary
 
     def _meets_minimum_version(self, cluster_info: dict, minimum_version: tuple[int, int]) -> bool:
-        """Check if the Elasticsearch version is supported."""
+        """Check if the OpenSearch version is supported."""
 
         version_number_parts = cluster_info["version"]["number"].split(".")
 

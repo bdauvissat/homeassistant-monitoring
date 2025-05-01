@@ -1,6 +1,6 @@
 """Utility functions for the Elasticsearch Integration."""
 
-from custom_components.elasticsearch.utils import flatten_dict
+from custom_components.opensearch.utils import flatten_dict
 
 
 def test_flatten_dict():

@@ -11,15 +11,15 @@ from homeassistant.loader import (
     async_get_integration,
 )
 
-from custom_components.elasticsearch.config_flow import ElasticFlowHandler
-from custom_components.elasticsearch.const import ELASTIC_DOMAIN
-from custom_components.elasticsearch.errors import (
+from custom_components.opensearch.config_flow import OpenSearchFlowHandler
+from custom_components.opensearch.const import ELASTIC_DOMAIN
+from custom_components.opensearch.errors import (
     AuthenticationRequired,
     CannotConnect,
     ESIntegrationException,
     UnsupportedVersion,
 )
-from custom_components.elasticsearch.logger import (
+from custom_components.opensearch.logger import (
     LOGGER,
     async_log_enter_exit_debug,
     async_log_enter_exit_info,
@@ -27,7 +27,7 @@ from custom_components.elasticsearch.logger import (
     log_enter_exit_debug,
 )
 
-from .es_integration import ElasticIntegration
+from .os_integration import ElasticIntegration
 
 if TYPE_CHECKING:  # pragma: no cover
     from homeassistant.core import HomeAssistant
@@ -87,19 +87,19 @@ async def async_unload_entry(hass: HomeAssistant, config_entry: ElasticIntegrati
 @async_log_enter_exit_debug
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ElasticIntegrationConfigEntry) -> bool:
     """Handle migration of config entry."""
-    if config_entry.version == ElasticFlowHandler.VERSION:
+    if config_entry.version == OpenSearchFlowHandler.VERSION:
         return True
 
     try:
         migrated_data, migrated_options, migrated_version = migrate_data_and_options_to_version(
             config_entry,
-            ElasticFlowHandler.VERSION,
+            OpenSearchFlowHandler.VERSION,
         )
     except Exception:  # noqa: BLE001
         LOGGER.exception(
             "Migration failed attempting to migrate from version %s to version %s.",
             config_entry.version,
-            ElasticFlowHandler.VERSION,
+            OpenSearchFlowHandler.VERSION,
         )
         return False
 

@@ -1,4 +1,4 @@
-"""Defines the index template for Elasticsearch data streams."""
+"""Defines the index template for OpenSearch data streams."""
 
 from typing import Any
 
@@ -14,9 +14,9 @@ index_template_definition: dict[str, Any] = {
                         "mapping": {
                             "type": "text",
                             "fields": {
-                                "keyword": {"ignore_above": 1024, "type": "keyword"},
-                            },
-                        },
+                                "keyword": {"ignore_above": 1024, "type": "keyword"}
+                            }
+                        }
                     }
                 }
             ],
@@ -24,8 +24,8 @@ index_template_definition: dict[str, Any] = {
                 "data_stream": {
                     "properties": {
                         "type": {"type": "constant_keyword", "value": "metrics"},
-                        "dataset": {"type": "constant_keyword"},
-                        "namespace": {"type": "constant_keyword"},
+                        "dataset": {"type": "keyword"},
+                        "namespace": {"type": "keyword"}
                     }
                 },
                 "hass": {
@@ -41,18 +41,18 @@ index_template_definition: dict[str, Any] = {
                                 "attributes": {"type": "object", "dynamic": True},
                                 "object": {
                                     "type": "object",
-                                    "properties": {"id": {"type": "keyword", "time_series_dimension": True}},
+                                    "properties": {"id": {"type": "keyword"}}
                                 },
                                 "location": {"type": "geo_point"},
                                 "value": {
                                     "type": "text",
-                                    "fields": {"keyword": {"ignore_above": 1024, "type": "keyword"}},
+                                    "fields": {"keyword": {"ignore_above": 1024, "type": "keyword"}}
                                 },
                                 "valueas": {
                                     "properties": {
                                         "string": {
                                             "type": "text",
-                                            "fields": {"keyword": {"ignore_above": 1024, "type": "keyword"}},
+                                            "fields": {"keyword": {"ignore_above": 1024, "type": "keyword"}}
                                         },
                                         "float": {"ignore_malformed": True, "type": "float"},
                                         "boolean": {"type": "boolean"},
@@ -60,9 +60,9 @@ index_template_definition: dict[str, Any] = {
                                         "date": {"type": "date", "format": "strict_date"},
                                         "time": {
                                             "type": "date",
-                                            "format": "HH:mm:ss.SSSSSS||time||strict_hour_minute_second||time_no_millis",
+                                            "format": "HH:mm:ss.SSSSSS||time||strict_hour_minute_second||time_no_millis"
                                         },
-                                        "integer": {"ignore_malformed": True, "type": "integer"},
+                                        "integer": {"ignore_malformed": True, "type": "integer"}
                                     }
                                 },
                                 "platform": {"type": "keyword"},
@@ -76,12 +76,12 @@ index_template_definition: dict[str, Any] = {
                                             "type": "object",
                                             "properties": {
                                                 "id": {"type": "keyword"},
-                                                "name": {"type": "keyword"},
-                                            },
+                                                "name": {"type": "keyword"}
+                                            }
                                         },
                                         "id": {"type": "keyword"},
-                                        "name": {"type": "keyword"},
-                                    },
+                                        "name": {"type": "keyword"}
+                                    }
                                 },
                                 "device": {
                                     "type": "object",
@@ -96,19 +96,19 @@ index_template_definition: dict[str, Any] = {
                                                     "type": "object",
                                                     "properties": {
                                                         "id": {"type": "keyword"},
-                                                        "name": {"type": "keyword"},
-                                                    },
+                                                        "name": {"type": "keyword"}
+                                                    }
                                                 },
                                                 "id": {"type": "keyword"},
-                                                "name": {"type": "keyword"},
-                                            },
-                                        },
-                                    },
+                                                "name": {"type": "keyword"}
+                                            }
+                                        }
+                                    }
                                 },
-                                "device_class": {"type": "keyword"},
-                            },
+                                "device_class": {"type": "keyword"}
+                            }
                         }
-                    },
+                    }
                 },
                 "@timestamp": {"type": "date_nanos", "format": "strict_date_optional_time_nanos"},
                 "tags": {"ignore_above": 1024, "type": "keyword"},
@@ -116,12 +116,12 @@ index_template_definition: dict[str, Any] = {
                     "properties": {
                         "action": {"type": "keyword", "ignore_above": 1024},
                         "type": {"ignore_above": 1024, "type": "keyword"},
-                        "kind": {"ignore_above": 1024, "type": "keyword"},
+                        "kind": {"ignore_above": 1024, "type": "keyword"}
                     }
                 },
                 "agent": {
                     "properties": {
-                        "version": {"ignore_above": 1024, "type": "keyword"},
+                        "version": {"ignore_above": 1024, "type": "keyword"}
                     }
                 },
                 "host": {
@@ -130,22 +130,18 @@ index_template_definition: dict[str, Any] = {
                         "location": {"type": "geo_point"},
                         "hostname": {"ignore_above": 1024, "type": "keyword"},
                         "name": {"ignore_above": 1024, "type": "keyword"},
-                        "os": {"properties": {"name": {"ignore_above": 1024, "type": "keyword"}}},
+                        "os": {"properties": {"name": {"ignore_above": 1024, "type": "keyword"}}}
                     }
                 },
-                "ecs": {"properties": {"version": {"ignore_above": 1024, "type": "keyword"}}},
-            },
+                "ecs": {"properties": {"version": {"ignore_above": 1024, "type": "keyword"}}}
+            }
         },
         "settings": {
             "codec": "best_compression",
-            "index.mode": "time_series",
-            "mapping": {"total_fields": {"limit": "10000"}},
-        },
-        "lifecycle": {"data_retention": "365d"},
+            "mapping": {"total_fields": {"limit": "10000"}}
+        }
     },
-    "composed_of": "metrics-homeassistant@custom",
-    "ignore_missing_component_templates": "metrics-homeassistant@custom",
     "priority": 500,
     "data_stream": {},
-    "version": 6,
+    "version": 6
 }

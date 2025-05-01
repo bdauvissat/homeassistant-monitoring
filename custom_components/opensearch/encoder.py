@@ -3,7 +3,7 @@
 import json
 from typing import Any
 
-from elasticsearch8.serializer import JSONSerializer
+from opensearchpy.serializer import JSONSerializer
 
 
 def convert_set_to_list(data: Any) -> Any:

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Create an elasticsearch api key
+# Create an opensearch api key
 
 # Usage: /bin/bash ./create_apikey_es <esurl> <esusername> <espassword> <newapikeyname> <newapiroledescriptor>
 #   <esurl> - The URL of the Elasticsearch instance (e.g., https: //localhost:9200)

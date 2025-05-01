@@ -11,9 +11,9 @@ import elasticsearch8
 import elasticsearch8.helpers
 import pytest
 from aiohttp import client_exceptions
-from custom_components.elasticsearch.const import ES_CHECK_PERMISSIONS_DATASTREAM
-from custom_components.elasticsearch.datastreams.index_template import index_template_definition
-from custom_components.elasticsearch.errors import (
+from custom_components.opensearch.const import ES_CHECK_PERMISSIONS_DATASTREAM
+from custom_components.opensearch.datastreams.index_template import index_template_definition
+from custom_components.opensearch.errors import (
     AuthenticationRequired,
     CannotConnect,
     InsufficientPrivileges,
@@ -21,10 +21,10 @@ from custom_components.elasticsearch.errors import (
     UnsupportedVersion,
     UntrustedCertificate,
 )
-from custom_components.elasticsearch.es_gateway import (
-    ElasticsearchGateway,
+from custom_components.opensearch.os_gateway import (
+    OpenSearchGateway,
 )
-from custom_components.elasticsearch.es_gateway_8 import Elasticsearch8Gateway, Gateway8Settings
+from custom_components.opensearch.os_gateway_2 import OpenSearch2Gateway, Gateway2Settings
 from elastic_transport import ApiResponseMeta, BaseNode, ObjectApiResponse
 from elasticsearch8._async.client import AsyncElasticsearch
 
@@ -76,9 +76,9 @@ def mock_es_response(body):
 
 
 @pytest.fixture
-def gateway_settings() -> Gateway8Settings:
+def gateway_settings() -> Gateway2Settings:
     """Return a Gateway8Settings instance."""
-    return Gateway8Settings(
+    return Gateway2Settings(
         url=testconst.CONFIG_ENTRY_DATA_URL,
         username="username",
         password="password",
@@ -90,11 +90,11 @@ def gateway_settings() -> Gateway8Settings:
 
 
 @pytest.fixture
-async def gateway_mock_shared(gateway_settings) -> Elasticsearch8Gateway:
+async def gateway_mock_shared(gateway_settings) -> OpenSearch2Gateway:
     """Return a mock Elasticsearch client."""
     gateway_settings.to_client = MagicMock(return_value=MagicMock(AsyncElasticsearch))
 
-    gateway = Elasticsearch8Gateway(gateway_settings=gateway_settings)
+    gateway = OpenSearch2Gateway(gateway_settings=gateway_settings)
 
     gateway._client.options = MagicMock(return_value=gateway._client)
 
@@ -143,8 +143,8 @@ async def gateway_mock_shared(gateway_settings) -> Elasticsearch8Gateway:
 
 @pytest.fixture
 async def gateway_mock_stateful(
-    gateway_mock_shared: Elasticsearch8Gateway, mock_logger
-) -> Elasticsearch8Gateway:
+    gateway_mock_shared: OpenSearch2Gateway, mock_logger
+) -> OpenSearch2Gateway:
     """Return a mock Elasticsearch client for a Stateful ES Cluster."""
 
     gateway_mock_shared._client.info = mock_es_response(testconst.CLUSTER_INFO_8DOT14_RESPONSE_BODY)
@@ -159,7 +159,7 @@ async def gateway_mock_stateful(
 
 
 @pytest.fixture
-async def gateway_mock_serverless(gateway_mock_shared: Elasticsearch8Gateway) -> Elasticsearch8Gateway:
+async def gateway_mock_serverless(gateway_mock_shared: OpenSearch2Gateway) -> OpenSearch2Gateway:
     """Return a mock Elasticsearch client for serverless ES."""
 
     gateway_mock_shared._client.info = mock_es_response(testconst.CLUSTER_INFO_SERVERLESS_RESPONSE_BODY)
@@ -177,8 +177,8 @@ class Test_Initialization:
 
     async def test_init_basic_auth(self) -> None:
         """Test initializing a gateway with basic authentication."""
-        gateway = Elasticsearch8Gateway(
-            gateway_settings=Gateway8Settings(
+        gateway = OpenSearch2Gateway(
+            gateway_settings=Gateway2Settings(
                 url=testconst.CONFIG_ENTRY_DATA_URL, username="username", password="password"
             )
         )
@@ -189,8 +189,8 @@ class Test_Initialization:
         """Test initializing a gateway with API Key authentication."""
 
         # API Key Authentication
-        gateway = Elasticsearch8Gateway(
-            gateway_settings=Gateway8Settings(
+        gateway = OpenSearch2Gateway(
+            gateway_settings=Gateway2Settings(
                 url=testconst.CONFIG_ENTRY_DATA_URL,
                 api_key="api",
             )
@@ -200,8 +200,8 @@ class Test_Initialization:
 
     async def test_init_no_auth(self) -> None:
         """Test initializing a gateway with no authentication."""
-        gateway = Elasticsearch8Gateway(
-            gateway_settings=Gateway8Settings(
+        gateway = OpenSearch2Gateway(
+            gateway_settings=Gateway2Settings(
                 url=testconst.CONFIG_ENTRY_DATA_URL_INSECURE,
             )
         )
@@ -228,8 +228,8 @@ class Test_Initialization:
     ) -> None:
         """Test initializing a gateway with various TLS settings."""
 
-        gateway = Elasticsearch8Gateway(
-            gateway_settings=Gateway8Settings(
+        gateway = OpenSearch2Gateway(
+            gateway_settings=Gateway2Settings(
                 url=testconst.CONFIG_ENTRY_DATA_URL,
                 verify_certs=verify_certs,
                 verify_hostname=verify_hostname,
@@ -248,8 +248,8 @@ class Test_Initialization:
         # cert is located in "certs/http_ca.crt" relative to this file, get the absolute path
         current_directory = os.path.dirname(os.path.abspath(__file__))
 
-        gateway = Elasticsearch8Gateway(
-            gateway_settings=Gateway8Settings(
+        gateway = OpenSearch2Gateway(
+            gateway_settings=Gateway2Settings(
                 url=testconst.CONFIG_ENTRY_DATA_URL,
                 verify_certs=True,
                 verify_hostname=True,
@@ -464,7 +464,7 @@ class Test_Public_Functions:
             )
 
         with patch(
-            "custom_components.elasticsearch.es_gateway_8.async_streaming_bulk"
+            "custom_components.opensearch.es_gateway_8.async_streaming_bulk"
         ) as mock_streaming_bulk:
             mock_streaming_bulk.side_effect = [yield_response()]
 
@@ -479,7 +479,7 @@ class Test_Public_Functions:
         """Test the bulk method."""
 
         with patch(
-            "custom_components.elasticsearch.es_gateway_8.async_streaming_bulk"
+            "custom_components.opensearch.es_gateway_8.async_streaming_bulk"
         ) as mock_streaming_bulk:
             await gateway_mock_stateful.bulk(actions=[])
 
@@ -494,7 +494,7 @@ class Test_Public_Functions:
         @pytest.fixture(name="gateway")
         async def gateway_fixture(self, gateway_settings, mock_logger):
             """Return a gateway instance."""
-            gateway = Elasticsearch8Gateway(gateway_settings=gateway_settings)
+            gateway = OpenSearch2Gateway(gateway_settings=gateway_settings)
 
             gateway._logger = mock_logger
 
@@ -649,7 +649,7 @@ class Test_Errors_e2e:
         """Return a gateway instance."""
 
         es_mock_builder.as_elasticsearch_8_17().with_correct_permissions()
-        gateway = Elasticsearch8Gateway(gateway_settings=gateway_settings)
+        gateway = OpenSearch2Gateway(gateway_settings=gateway_settings)
         es_mock_builder.reset()
 
         try:
@@ -680,7 +680,7 @@ class Test_Errors_e2e:
     )
     async def test_http_error_codes(
         self,
-        gateway: ElasticsearchGateway,
+        gateway: OpenSearchGateway,
         es_mock_builder,
         status_code: int,
         expected_exception: Any,

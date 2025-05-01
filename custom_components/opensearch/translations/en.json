@@ -9,20 +9,20 @@
             "invalid_api_key": "Invalid API Key.",
             "insufficient_privileges": "Insufficient privileges for specified user.",
             "missing_credentials": "This cluster requires authentication. Please provide a username and password.",
-            "untrusted_certificate": "Elasticsearch's server certificate could not be verified. Either disable TLS verification, or specify a custom CA path below.",
-            "unsupported_version": "Unsupported version of Elasticsearch detected. The minimum supported version is 7.11.0."
+            "untrusted_certificate": "OpenSearch's server certificate could not be verified. Either disable TLS verification, or specify a custom CA path below.",
+            "unsupported_version": "Unsupported version of OpenSearch detected. The minimum supported version is 7.11.0."
         },
         "step": {
             "user": {
-                "title": "Elasticsearch Cluster Information",
-                "description": "Please provide the URL to access your elasticsearch cluster in the format http(s)://my_elasticsearch_server:port (https://my_elasticsearch:9200).",
+                "title": "OpenSearch Cluster Information",
+                "description": "Please provide the URL to access your OpenSearch cluster in the format http(s)://my_OpenSearch_server:port (https://my_OpenSearch:9200).",
                 "data": {
-                    "url": "URL to access the Elasticsearch Cluster"
+                    "url": "URL to access the OpenSearch Cluster"
                 }
             },
             "certificate_issues": {
                 "title": "Untrusted Certificate with SSL/TLS",
-                "description": "Elasticsearch's server certificate could not be verified. Either disable TLS verification, or specify a custom CA path below.",
+                "description": "OpenSearch's server certificate could not be verified. Either disable TLS verification, or specify a custom CA path below.",
                 "data": {
                     "verify_ssl": "Verify TLS certificate (recommended)",
                     "ssl_verify_hostname": "Verify hostname matches server certificate",
@@ -31,7 +31,7 @@
             },
             "authentication_issues": {
                 "title": "Select an Authentication Method",
-                "description": "Choose an authentication method to connect to your Elasticsearch cluster.",
+                "description": "Choose an authentication method to connect to your OpenSearch cluster.",
                 "data": {
                     "basic_auth": "Authenticate via username/password",
                     "api_key": "Authenticate via API Key"
@@ -66,7 +66,7 @@
                 "title": "Elastic Integration Settings",
                 "description": "Configure the polling and publishing settings for the Elastic integration.",
                 "data": {
-                    "publish_frequency": "Send events to Elasticsearch at this interval",
+                    "publish_frequency": "Send events to OpenSearch at this interval",
                     "polling_frequency": "Gather all entity states at this interval",
                     "change_detection_type": "Choose what types of entity changes to listen for and publish",
                     "tags": "Tags to apply to all published events",

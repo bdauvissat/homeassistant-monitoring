@@ -4,9 +4,9 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from custom_components.elasticsearch import const as compconst
-from custom_components.elasticsearch import utils
-from custom_components.elasticsearch.entity_details import (
+from custom_components.opensearch import const as compconst
+from custom_components.opensearch import utils
+from custom_components.opensearch.entity_details import (
     ExtendedDeviceEntry,
     ExtendedEntityDetails,
     ExtendedRegistryEntry,
@@ -22,7 +22,7 @@ async def mock_extended_registry_fixture():
     mock_extended_registry = MagicMock(spec=ExtendedRegistryEntry)
 
     with patch(
-        "custom_components.elasticsearch.entity_details.ExtendedRegistryEntry",
+        "custom_components.opensearch.entity_details.ExtendedRegistryEntry",
         return_value=mock_extended_registry,
     ) as mock:
         yield mock

@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
 from aiohttp import client_exceptions
-from custom_components.elasticsearch.const import DATASTREAM_METRICS_INDEX_TEMPLATE_NAME
+from custom_components.opensearch.const import DATASTREAM_METRICS_INDEX_TEMPLATE_NAME
 
-# import custom_components.elasticsearch  # noqa: F401
-# import custom_components.elasticsearch  # noqa: F401
+# import custom_components.opensearch  # noqa: F401
+# import custom_components.opensearch  # noqa: F401
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,  # noqa: F401  # noqa: F401
 )
@@ -186,7 +186,7 @@ class es_mocker:
         return self._as_elasticsearch_stateful(testconst.CLUSTER_INFO_8DOT14_RESPONSE_BODY, with_security)
 
     def as_fake_elasticsearch(self) -> es_mocker:
-        """Mock a fake elasticsearch node response."""
+        """Mock a fake opensearch node response."""
 
         self.mocker.get(
             f"{self.base_url}",

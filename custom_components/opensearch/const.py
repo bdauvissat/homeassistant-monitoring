@@ -4,10 +4,10 @@ from enum import Enum
 from types import MappingProxyType
 from typing import Any
 
-DOMAIN: str = "elasticsearch"
-ELASTIC_DOMAIN: str = "elasticsearch"
+DOMAIN: str = "opensearch"
+ELASTIC_DOMAIN: str = "opensearch"
 
-ELASTIC_MINIMUM_VERSION: tuple[int, int] = (8, 14)
+ELASTIC_MINIMUM_VERSION: tuple[int, int] = (2, 0)
 
 CONF_PUBLISH_FREQUENCY: str = "publish_frequency"
 CONF_POLLING_FREQUENCY: str = "polling_frequency"
@@ -69,7 +69,7 @@ ES_CHECK_PERMISSIONS_DATASTREAM: MappingProxyType[str, Any] = MappingProxyType(
 
 
 class StateChangeType(Enum):
-    """Elasticsearch State Change Types constants."""
+    """OpenSearch State Change Types constants."""
 
     STATE = "state"
     ATTRIBUTE = "attribute"
@@ -85,7 +85,7 @@ class StateChangeType(Enum):
 
 
 class CAPABILITIES:
-    """Elasticsearch CAPABILITIES constants."""
+    """OpenSearch CAPABILITIES constants."""
 
     MAJOR: str = "MAJOR"
     MINOR: str = "MINOR"
